@@ -1,8 +1,10 @@
 import types.ABinHuffman;
+import java.util.Scanner;
+import outilsArbre.OutilsArbre;
 import outilsHuffman.OutilsHuffman;
 
 /**
- * RÃ©alisation du dÃ©codage d'un texte par la mÃ©thode de Huffman
+ * Réalisation du décodage d'un texte par la méthode de Huffman
  */
 
 public class DecodageHuffman
@@ -10,51 +12,69 @@ public class DecodageHuffman
   public static void main (String[] args)
   {
     //------------------------------------------------------------------------
-    // 0. Saisir le nom du fichier Ã  dÃ©coder (Ã€ FAIRE)
+    // 0. Saisir le nom du fichier à  décoder (À FAIRE)
     //------------------------------------------------------------------------
     String nomFichier;
+    
+    Scanner input=new Scanner(System.in);
+    System.out.println("Entrer le nom du fichier à décoder : ");
+    nomFichier=input.nextLine();
+    input.close();
 
     //------------------------------------------------------------------------
-    // 1. Lire et construire la table de frÃ©quences (DONNÃ‰)
+    // 1. Lire et construire la table de fréquences (DONNÉ)
     //------------------------------------------------------------------------
     int [] tableFrequences = OutilsHuffman.lireTableFrequences(nomFichier);
 
     //------------------------------------------------------------------------
-    // 2. Construire l'arbre de Huffman (DONNÃ‰)
+    // 2. Construire l'arbre de Huffman (DONNÉ)
     //------------------------------------------------------------------------
     ABinHuffman arbreHuffman =
       OutilsHuffman.construireArbreHuffman(tableFrequences);
 
     //------------------------------------------------------------------------
-    // 2.1 afficher l'arbre de Huffman (Ã€ FAIRE)
+    // 2.1 afficher l'arbre de Huffman (À FAIRE)
     //------------------------------------------------------------------------
-    System.out.println("Arbre de Huffman associÃ© au texte " + nomFichier);
     afficherHuffman(arbreHuffman);
 
     //------------------------------------------------------------------------
-    // 3. Lire le texte codÃ© (DONNÃ‰)
+    // 3. Lire le texte codé (DONNÉ)
     //------------------------------------------------------------------------
     String texteCode = OutilsHuffman.lireTexteCode(nomFichier);
 
     //------------------------------------------------------------------------
-    // 4. DÃ©coder le texte (Ã€ FAIRE)
+    // 4. Décoder le texte (À FAIRE)
     //------------------------------------------------------------------------
     StringBuilder texteDecode = decoderTexte(texteCode, arbreHuffman);
 
     //------------------------------------------------------------------------
-    // 5. Enregistrer le texte dÃ©code (DONNÃ‰)
+    // 5. Enregistrer le texte décode (DONNÉ)
     //------------------------------------------------------------------------
-    System.out.println("texte dÃ©codÃ©:\n\n" + texteDecode);
+    System.out.println("\nTexte décodé:\n\n" + texteDecode);
     OutilsHuffman.enregistrerTexte(texteDecode, nomFichier + ".decode");
   }
 
   /**
-   * 4. dÃ©coder une chaÃ®ne (non vide) encodÃ©e par le codage de Huffman
-   * @param texteCode    : chaÃ®ne de "0/1" Ã  dÃ©coder
-   * @param arbreHuffman : arbre de (dÃ©)codage des caractÃ¨res
+   * 4. décoder une chaîne (non vide) encodée par le codage de Huffman
+   * @param texteCode    : chaîne de "0/1" à  décoder
+   * @param arbreHuffman : arbre de (dé)codage des caractères
    */
   public static StringBuilder decoderTexte(String texteCode, ABinHuffman arbreHuffman)
   {
+	  StringBuilder texteDecode=new StringBuilder();
+	  ABinHuffman abh=arbreHuffman;
+	  for(int i=0;i<texteCode.length();i++){
+		  if(texteCode.charAt(i)=='0'){
+			  abh=abh.filsGauche();
+		  }else{
+			  abh=abh.filsDroit();
+		  }
+		  if(abh.estFeuille()){
+			  texteDecode.append(abh.getValeur().premier());
+			  abh=arbreHuffman;
+		  }
+	  }
+	  return texteDecode;
   }
 
   /**
@@ -63,5 +83,7 @@ public class DecodageHuffman
    */
   public static void afficherHuffman(ABinHuffman a)
   {
+	  String titre="Arbre binaire de Huffman correspondant : ";
+	  OutilsArbre.afficher(a, titre);
   }
 } // DecodageHuffman
