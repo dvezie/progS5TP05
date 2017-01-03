@@ -30,7 +30,8 @@ public class DecodageHuffman
     // 2. Construire l'arbre de Huffman (DONNÉ)
     //------------------------------------------------------------------------
     ABinHuffman arbreHuffman =
-      OutilsHuffman.construireArbreHuffman(tableFrequences);
+      //OutilsHuffman.construireArbreHuffman(tableFrequences);
+      CodageHuffman.construireArbreHuffman(tableFrequences);
 
     //------------------------------------------------------------------------
     // 2.1 afficher l'arbre de Huffman (À FAIRE)
