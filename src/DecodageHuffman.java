@@ -1,4 +1,9 @@
 import types.ABinHuffman;
+
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.Scanner;
 import outilsArbre.OutilsArbre;
 import outilsHuffman.OutilsHuffman;
@@ -52,7 +57,7 @@ public class DecodageHuffman
     // 5. Enregistrer le texte décode (DONNÉ)
     //------------------------------------------------------------------------
     System.out.println("\nTexte décodé:\n\n" + texteDecode);
-    OutilsHuffman.enregistrerTexte(texteDecode, nomFichier + ".decode");
+    enregistrerTexte(texteDecode, nomFichier + ".decode");
   }
 
   /**
@@ -86,5 +91,25 @@ public class DecodageHuffman
   {
 	  String titre="Arbre binaire de Huffman correspondant : ";
 	  OutilsArbre.afficher(a, titre);
+  }
+  
+  /**
+   * 6. Enregistre le texte décodé dans le fichier indiqué
+   * @param texte : texte décodé
+   * @param nomFichierDecode : fichier dans lequel enregistrer le texte
+   */
+  public static void enregistrerTexte ( StringBuilder texte , String nomFichierDecode) {
+	  
+	  OutputStream outputStream;
+	  Writer outputStreamWriter;
+	  
+	  try {
+		  outputStream = new FileOutputStream(nomFichierDecode);
+		  outputStreamWriter = new OutputStreamWriter(outputStream, "ISO-8859-1");
+		  outputStreamWriter.write(texte.toString());
+		  outputStreamWriter.close();
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
   }
 } // DecodageHuffman
