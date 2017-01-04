@@ -5,6 +5,7 @@ import types.Couple;
 import java.util.ListIterator;
 import java.util.Scanner;
 
+import outilsArbre.OutilsArbre;
 import outilsHuffman.OutilsHuffman;
 
 /**
@@ -14,9 +15,9 @@ import outilsHuffman.OutilsHuffman;
 public class CodageHuffman
 {
   public static void main (String[] args)
-  {
+  {	
     //------------------------------------------------------------------------
-    // 0. Saisir le nom du fichier à coder (Ã€ FAIRE)
+    // 0. Saisir le nom du fichier à coder (A FAIRE)
     //------------------------------------------------------------------------
     String nomFichier;
     Scanner input=new Scanner(System.in);
@@ -24,59 +25,85 @@ public class CodageHuffman
     nomFichier=input.nextLine();
     input.close();
     
+    long tempsTotal = OutilsHuffman.getInstantPresent();
+    
     //------------------------------------------------------------------------
-    // 1. Lire le texte (DONNÃ‰)
+    // 1. Lire le texte (DONNE)
     //------------------------------------------------------------------------
     char [] texte = OutilsHuffman.lireFichier(nomFichier);
+    
+    double tailleTextNonCode = texte.length;
 
     //------------------------------------------------------------------------
-    // 2. Calculer la table des fréquences des caractères (Ã€ FAIRE)
+    // 2. Calculer la table des fréquences des caractères (A FAIRE)
     //------------------------------------------------------------------------
     int [] tableFrequences = calculerFrequences(texte);
 
     //------------------------------------------------------------------------
-    // 3. Enregistrer la table de fréquences dans le fichier de sortie (DONNÃ‰)
+    // 3. Enregistrer la table de fréquences dans le fichier de sortie (DONNE)
     //------------------------------------------------------------------------
     OutilsHuffman.enregistrerTableFrequences(tableFrequences, nomFichier + ".code");
 
     //------------------------------------------------------------------------
-    // 4. Construire l'arbre de codage de Huffman (DONNÃ‰ - Ã€ FAIRE)
+    // 4. Construire l'arbre de codage de Huffman (DONNE - A FAIRE)
     //------------------------------------------------------------------------
     ABinHuffman arbreCodageHuffman = construireArbreHuffman(tableFrequences);
 
     //------------------------------------------------------------------------
-    // Afficher l'arbre de codage de Huffman (DÃ‰JÃ€ FAIT)
+    // Afficher l'arbre de codage de Huffman (DEJA FAIT)
     //------------------------------------------------------------------------
     System.out.println("Arbre de Huffman associé au texte " + nomFichier);
     DecodageHuffman.afficherHuffman(arbreCodageHuffman);
 
     //------------------------------------------------------------------------
-    // 5. Construire la table de codage associée (Ã€ FAIRE)
+    // 5. Construire la table de codage associée (A FAIRE)
     //------------------------------------------------------------------------
     String [] tablecodage = construireTableCodage(arbreCodageHuffman);
 
     //------------------------------------------------------------------------
-    // 5.1. afficher la table de codage (Ã€ FAIRE)
+    // 5.1. afficher la table de codage (A FAIRE)
     //------------------------------------------------------------------------
     System.out.println("Table de codage associée au texte " + nomFichier);
     afficherTableCodage(tablecodage);
 
     //------------------------------------------------------------------------
-    // 6. coder le texte avec l'arbre de Huffman (Ã€ FAIRE)
+    // 6. coder le texte avec l'arbre de Huffman (A FAIRE)
     //------------------------------------------------------------------------
+    long tempsCodage = OutilsHuffman.getInstantPresent();
+    
     StringBuilder texteCode = coderTexte(texte, tablecodage);
+    
+    tempsCodage = OutilsHuffman.getInstantPresent()-tempsCodage;
+    
+    double octet = 8;
+    double tailleTextCode = Math.ceil(texteCode.length()/octet);
+    
 
     //------------------------------------------------------------------------
-    // 7. enregistrer le texte codé (DONNÃ‰)
+    // 7. enregistrer le texte codé (DONNE)
     //------------------------------------------------------------------------
     OutilsHuffman.enregistrerTexteCode(texteCode, nomFichier + ".code");
 
+    tempsTotal = OutilsHuffman.getInstantPresent()-tempsTotal;
     //------------------------------------------------------------------------
-    // xx. calculer et afficher les stats (Ã€ FAIRE)
+    // xx. calculer et afficher les stats (A FAIRE)
     //------------------------------------------------------------------------
-    // calculer la taille du fichier non codé
-    // calculer la taille du fichier codé
-
+    // calculer la taille du fichier non codé   
+    long tailleFichierNonCode = OutilsHuffman.tailleFichier(nomFichier);
+    
+    // calculer la taille du fichier codé    
+    long tailleFichierCode = OutilsHuffman.tailleFichier(nomFichier + ".code");    
+    
+    //------------------------------------------------------------------------
+    // Affichage des données concernant l'opération :
+    //------------------------------------------------------------------------
+    System.out.println("Taille texte   compressé: "+(int) tailleTextCode);
+    System.out.println("Taux compression texte  : "+(int) (100.0*tailleTextCode/tailleTextNonCode)+" %");
+    System.out.println("Taille fichier compressé: "+(int) tailleFichierCode);
+    System.out.println("Taux compression fichier: "+(int) (100.0*tailleFichierCode/tailleFichierNonCode)+" %");
+    System.out.println("Durée codage            : "+tempsCodage+" ms");
+    System.out.println("Durée totale            : "+tempsTotal+" ms");
+    
   }
 
   /**
@@ -161,7 +188,7 @@ public class CodageHuffman
 				  break;
 			  }
 		  }
-	  }
+	  }	  
   }
   
   /**
@@ -237,12 +264,21 @@ public class CodageHuffman
   public static void afficherTableCodage(String [] tablecodage)
   {
 	  for(int i=1;i<tablecodage.length;i++){
-		  String code = tablecodage[i];
+		  String code = tablecodage[i];		  
 		  if(code!="null"){
-			  if(i==32){
-				  System.out.println("space : "+code);
-			  } else {
-				  System.out.println((char) i+" : "+code);
+			  switch(i){
+			  case 10 :
+				  System.out.println("<\\n> : "+code);
+				  break;
+			  case 13 :
+				  System.out.println("<\\r> : "+code);
+				  break;
+			  case 32 : 
+				  System.out.println("<space> : "+code);
+				  break;
+			  default :
+				  System.out.println("<"+(char) i+"> : "+code);
+				  break;
 			  }
 		  }	  
 	  }
